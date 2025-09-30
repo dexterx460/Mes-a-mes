@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto - Mes a Mes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        html, body{height:100%}
+        body { font-family: 'Poppins', sans-serif; min-height:100%; display:flex; flex-direction:column; }
+    .site-header .container{padding-top:0.6rem;padding-bottom:0.6rem}
+    .site-title{font-size:1.25rem}
+        .gallery-thumb {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+        .gallery-thumb.selected {
+            border: 2px solid #d97706;
+        }
+    /* account-like controls for producto page */
+    .product-panel{ border-radius:14px; padding:18px; background:linear-gradient(180deg,#fffaf0,#ffffff); box-shadow:0 18px 46px rgba(10,10,10,0.04); }
+    .auth-input{ width:100%; padding:10px 12px; border:1px solid #f0ece8; border-radius:10px; outline:none; transition:box-shadow .15s, border-color .15s }
+    .auth-input:focus{ box-shadow:0 8px 24px rgba(209,156,83,0.10); border-color:#e08a11 }
+    .auth-submit{ background:linear-gradient(180deg,#c96d0a,#b45309); color:white; padding:10px 14px; border-radius:10px; font-weight:700; box-shadow:0 12px 36px rgba(180,83,9,0.12); border:none }
+    .auth-submit:hover{ transform:translateY(-2px) }
+    .auth-secondary{ background:linear-gradient(180deg,#f3f1ef,#ffffff); color:#1f2937; padding:8px 12px; border-radius:10px; border:1px solid #ece7e1 }
+    .color-swatch{ border:1px solid #e6e6e1 }
+    .color-swatch.selected{ outline:3px solid rgba(245,158,11,0.18); box-shadow:0 8px 20px rgba(169,120,41,0.06) }
+    .preset-btn{ border:1px solid #e6e6e1; padding:8px 10px; border-radius:8px }
+    .preset-btn.selected{ background:#fff7ed; border-color:#f3d7b0 }
+    </style>
+</head>
+<body class="bg-white">
+    <header class="site-header sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="site-title text-3xl font-bold text-amber-800">Mes a Mes</h1>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 items-center">
+                    <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                    <li><a href="index.html#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                    <li><a href="index.html#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                    <li><a href="index.html#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                    <li><a href="index.html#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                    <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                    <li><a href="index.html#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                    <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition font-semibold">Mi cuenta</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-amber-800" id="menuBtn">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg absolute w-full left-0 top-full">
+            <ul class="flex flex-col items-center py-4 space-y-4">
+                <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                <li><a href="index.html#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                <li><a href="index.html#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                <li><a href="index.html#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                <li><a href="index.html#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                <li><a href="index.html#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition">Mi cuenta</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Producto Detalle -->
+    <section class="py-16 bg-gray-50 min-h-screen">
+        <div class="container mx-auto px-4 flex flex-col lg:flex-row gap-12">
+            <!-- Galería de imágenes -->
+            <div class="lg:w-1/2">
+                <div class="bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
+                    <img id="mainImage" src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="Calendario Clásico" class="w-full max-w-md h-80 object-cover rounded-lg mb-6">
+                    <div class="flex gap-4">
+                        <img class="gallery-thumb selected w-20 h-16 object-cover rounded" src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="thumb1">
+                        <img class="gallery-thumb w-20 h-16 object-cover rounded" src="https://images.unsplash.com/photo-1464349095431-e9a21285b5e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="thumb2">
+                        <img class="gallery-thumb w-20 h-16 object-cover rounded" src="https://images.unsplash.com/photo-1471107340929-a87cd0f5b5e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="thumb3">
+                    </div>
+                </div>
+            </div>
+            <!-- Información del producto -->
+            <div class="lg:w-1/2 flex flex-col justify-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-amber-800 mb-4">Clásico Minimalista</h1>
+                <p class="text-lg text-gray-700 mb-4">Diseño limpio y funcional con tipografía fácil de leer. Ideal para quienes buscan practicidad y elegancia en un solo producto.</p>
+                <ul class="mb-6 space-y-2">
+                    <li><i class="fas fa-check text-amber-600 mr-2"></i> Tamaño: 8,5 x 5,5 cm (tipo tarjeta)</li>
+                    <li><i class="fas fa-check text-amber-600 mr-2"></i> Material: PVC laminado, resistente al agua</li>
+                    <li><i class="fas fa-check text-amber-600 mr-2"></i> Impresión a color de alta calidad</li>
+                    <li><i class="fas fa-check text-amber-600 mr-2"></i> Personalizable con tu nombre, logo o frase</li>
+                </ul>
+                <div class="mb-6">
+                    <span class="text-amber-700 font-bold text-2xl">$9100 ARS</span>
+                </div>
+                <!-- Descripción larga y formulario de compra + botones -->
+                <section class="bg-white p-0 mb-8">
+                    <h2 class="text-2xl font-bold text-amber-800 mb-2">Descripción detallada</h2>
+                    <p class="text-gray-700 mb-4">
+                        El minicalendario Clásico Minimalista de Mes a Mes es la solución perfecta para quienes buscan organización y estilo en un formato compacto. Fabricado en PVC laminado, es resistente al agua y al uso diario, ideal para llevar en la billetera, mochila o incluso en el bolsillo. Su diseño limpio facilita la lectura y permite visualizar todo el mes de un vistazo. Además, puedes personalizarlo con tu nombre, logo, frase favorita o incluso una imagen especial, convirtiéndolo en un regalo único o en una herramienta corporativa para tu empresa.
+                        <br><br>
+                        Todos nuestros productos son impresos con tecnología de alta calidad, garantizando colores vibrantes y durabilidad. Si tienes una idea especial, nuestro equipo de diseño te ayudará a hacerla realidad y te enviará una vista previa antes de imprimir.
+                    </p>
+                    <h3 class="text-xl font-semibold text-amber-800 mb-2">¿Cómo personalizar?</h3>
+                    <ul class="list-disc list-inside text-gray-700 mb-6 space-y-1">
+                        <li>Elige el diseño base y color de fondo.</li>
+                        <li>Agrega tu nombre, frase o logo (opcional).</li>
+                        <li>Puedes subir una imagen o pedir un diseño especial.</li>
+                        <li>¡Te enviamos una vista previa antes de imprimir!</li>
+                    </ul>
+                    <div class="flex flex-col md:flex-row gap-6 items-start">
+                            <div class="space-y-4 flex-1 product-panel">
+                            <h4 class="text-lg font-semibold text-amber-800 mb-2">Agregar al carrito</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label for="cantidad_input" class="block mb-1 text-gray-800">Cantidad</label>
+                                        <input type="number" id="cantidad_input" min="1" value="1" class="auth-input w-28" />
+                                    </div>
+                                    <button id="addToCartBtn" class="auth-submit">Agregar al carrito</button>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 text-sm text-gray-600 flex flex-col gap-2">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-truck text-amber-600"></i>
+                                    <div>
+                                        <div class="font-semibold">Envíos a todo el país</div>
+                                        <div class="text-xs">Seguimiento y despacho en 48-72h (según zona)</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-credit-card text-amber-600"></i>
+                                    <div>
+                                        <div class="font-semibold">Pago seguro</div>
+                                        <div class="text-xs">Aceptamos transferencias y MercadoPago</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex flex-col gap-3">
+                                <a href="https://wa.me/5491187654321" target="_blank" class="auth-secondary w-full flex items-center justify-center gap-2"><i class="fab fa-whatsapp text-green-600"></i> Comprar por WhatsApp</a>
+                                <a href="mailto:info@mesames.com.ar?subject=Consulta%20por%20minicalendario" class="auth-submit w-full flex items-center justify-center gap-2"><i class="fas fa-envelope"></i> Consultar por Email</a>
+                            </div>
+
+                            <p class="text-gray-500 text-xs mt-2">El producto se guardará en tu carrito aunque cierres la página.</p>
+                        </div>
+                    </div>
+                </section>
+                <div class="text-gray-600 text-sm">
+                    <i class="fas fa-truck mr-1"></i> Envíos a todo el país &nbsp; | &nbsp; <i class="fas fa-credit-card mr-1"></i> Aceptamos transferencias y MercadoPago
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 mt-20" style="margin-top:auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-3xl font-bold text-amber-500 mb-2">Mes a Mes</h2>
+                    <p class="text-gray-400">Organizando tu tiempo desde 2018</p>
+                </div>
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex space-x-6 mb-6">
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Términos y Condiciones</a>
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Política de Privacidad</a>
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Preguntas Frecuentes</a>
+                    </div>
+                    <p class="text-gray-400 text-sm">&copy; 2023 Mes a Mes - Todos los derechos reservados</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        // Close mobile menu when clicking a link
+        const mobileLinks = document.querySelectorAll('#mobileMenu a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+        // Galería de imágenes
+        const mainImage = document.getElementById('mainImage');
+        const thumbs = document.querySelectorAll('.gallery-thumb');
+        thumbs.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                thumbs.forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                mainImage.src = this.src;
+            });
+        });
+    </script>
+    <script>
+        const addBtn = document.getElementById('addToCartBtn');
+        if(addBtn){
+            addBtn.addEventListener('click', ()=>{
+                const qtyEl = document.getElementById('cantidad_input');
+                const qty = qtyEl ? Math.max(1, parseInt(qtyEl.value)||1) : 1;
+                const productName = 'Clásico Minimalista';
+                const price = 9100;
+
+                // safe queries for optional personalization controls
+                const colorEl = document.querySelector('.color-swatch.selected');
+                const colorCustomEl = document.getElementById('color_custom');
+                const color = colorEl ? colorEl.getAttribute('data-color') : (colorCustomEl ? colorCustomEl.value : '');
+
+                const presetEl = document.querySelector('.preset-btn.selected');
+                const preset = presetEl ? presetEl.getAttribute('data-preset') : '';
+
+                const textEl = document.getElementById('personal_text');
+                const text = textEl ? (textEl.value||'') : '';
+
+                const fileInput = document.getElementById('image_input');
+                const imageName = (fileInput && fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : '';
+                const meta = { color, preset, text, imageName };
+
+                if(window.addToCart){ window.addToCart(productName, price, qty, meta); }
+                else {
+                    const key = 'mm_cart';
+                    const cart = JSON.parse(localStorage.getItem(key)||'[]');
+                    const idx = cart.findIndex(i=>i.product===productName && JSON.stringify(i.meta||{})===JSON.stringify(meta||{}));
+                    if(idx>-1) cart[idx].qty = (cart[idx].qty||1) + qty;
+                    else cart.push({product:productName, price, qty, meta});
+                    localStorage.setItem(key, JSON.stringify(cart));
+                }
+
+                const b = document.createElement('div'); b.textContent='Añadido al carrito'; b.className='fixed bottom-6 right-6 bg-amber-600 text-white px-4 py-2 rounded shadow'; document.body.appendChild(b);
+                setTimeout(()=>b.remove(),1800);
+
+                try{
+                    const badge = document.getElementById('cartCount');
+                    if(badge){
+                        const count = JSON.parse(localStorage.getItem('mm_cart')||'[]').reduce((s,i)=>s+(i.qty||0),0);
+                        badge.textContent = count;
+                    }
+                }catch(e){ /* ignore */ }
+            });
+        }
+
+        // color and preset UI behavior
+        Array.from(document.getElementsByClassName('color-swatch')).forEach(btn=>{ btn.addEventListener('click', ()=>{ Array.from(document.getElementsByClassName('color-swatch')).forEach(x=>x.classList.remove('selected')); btn.classList.add('selected'); document.getElementById('color_custom').value = btn.getAttribute('data-color'); updatePreview(); }); });
+        Array.from(document.getElementsByClassName('preset-btn')).forEach(b=>{ b.addEventListener('click', ()=>{ Array.from(document.getElementsByClassName('preset-btn')).forEach(x=>x.classList.remove('selected')); b.classList.add('selected'); updatePreview(); }); });
+        document.getElementById('color_custom').addEventListener('input', updatePreview);
+        document.getElementById('personal_text').addEventListener('input', updatePreview);
+        document.getElementById('image_input').addEventListener('change', updatePreview);
+
+        function updatePreview(){ const box = document.getElementById('previewBox'); const color = document.getElementById('color_custom').value; const text = document.getElementById('personal_text').value; box.style.background = color || '#fff'; box.textContent = text || 'Sin personalización'; if(document.getElementById('image_input').files && document.getElementById('image_input').files[0]){ box.textContent = 'Imagen seleccionada: ' + document.getElementById('image_input').files[0].name; } }
+    </script>
+</body>
+</html>

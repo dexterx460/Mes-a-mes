@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mi cuenta - Mes a Mes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+    body{font-family:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; color:#1f2937}
+        .container{max-width:960px;margin:0 auto;padding:24px}
+        .hidden{display:none}
+    /* Auth card styles */
+    .auth-card{border-radius:16px;overflow:hidden;max-width:760px}
+    .auth-tabs{display:flex;background:transparent;position:relative;padding:12px 18px}
+    .auth-tab{flex:1;padding:14px 22px;text-align:center;cursor:pointer;border-radius:8px;transition:color .22s,background .22s}
+    .auth-tab.active{background:transparent;color:#9a4a00;font-weight:700}
+    .auth-body{padding:28px 28px 32px;background:linear-gradient(180deg,#ffffff,#fffaf0)}
+    /* Slightly smaller inputs inside compact panels */
+    #redeemModal .auth-input{padding:10px 12px;border-radius:10px}
+    #redeemModal .order-card{padding:10px}
+    #redeemModal .auth-submit.small{padding:8px 12px}
+    .auth-input{width:100%;padding:14px 16px;border:1px solid #f0ece8;border-radius:12px;outline:none;transition:box-shadow .15s, border-color .15s}
+    .auth-input:focus{box-shadow:0 10px 30px rgba(209,156,83,0.12);border-color:#e08a11}
+    .auth-submit{background:linear-gradient(180deg,#c96d0a,#b45309);color:white;padding:14px 18px;border-radius:12px;width:100%;font-weight:700;box-shadow:0 12px 36px rgba(180,83,9,0.14);transition:transform .12s, box-shadow .12s;position:relative;overflow:hidden}
+    .auth-submit:active{transform:translateY(1px);box-shadow:0 8px 20px rgba(0,0,0,0.08)}
+    .auth-submit:hover{transform:translateY(-2px);box-shadow:0 22px 56px rgba(180,83,9,0.18)}
+    .auth-submit.small{padding:8px 12px;font-size:14px;border-radius:10px}
+    /* muted logout button, same curve */
+    .auth-muted{background:linear-gradient(180deg,#f3f4f6,#ffffff);color:#374151;padding:10px 14px;border-radius:12px;border:1px solid #e6e6e9;box-shadow:none;font-weight:600}
+    .auth-muted:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(30,41,59,0.04)}
+    .auth-note{font-size:13px;color:#6b6b6b}
+    /* nicer gradient indicator centered under the active tab */
+    .tab-indicator{height:6px;background:linear-gradient(90deg,#f59e0b 0%, #f97316 45%, #b45309 100%);transition:transform .32s,width .28s;border-radius:8px;box-shadow:0 6px 18px rgba(180,83,9,0.12)}
+    /* Account panel matching auth look */
+    #accountPanel{position:relative;border-radius:14px;padding:24px;background:linear-gradient(180deg,#fffaf0,#ffffff);box-shadow:0 18px 46px rgba(10,10,10,0.04);transition:transform .36s,opacity .36s;transform-origin:top;overflow:visible}
+    #accountPanel.panel-animate{transform:translateY(6px) scale(.998);opacity:0;animation:panelIn .42s forwards cubic-bezier(.16,.84,.3,1)}
+    @keyframes panelIn{from{transform:translateY(10px) scale(.996);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+    .points-figure{font-size:28px;font-weight:800;color:#9a4a00}
+    .points-box{border-radius:12px;padding:16px;background:linear-gradient(180deg,#fffdfa,#fff6eb);border:1px solid #f6e7d7}
+    .points-bar-wrap{background:linear-gradient(90deg,#fff,#fff);border-radius:999px;height:12px;padding:3px;border:1px solid #fdeac9}
+    #pointsBar{height:100%;border-radius:999px;background:linear-gradient(90deg,#f59e0b 0%, #f97316 55%, #b45309 100%);transition:width .5s cubic-bezier(.2,.9,.3,1)}
+    .order-card{background:linear-gradient(90deg,#fff,#fffaf0);border-radius:10px;padding:14px;border:1px solid #f3e7d7;display:flex;justify-content:space-between;align-items:flex-start;box-shadow:0 10px 28px rgba(169,120,41,0.04);transition:transform .18s,box-shadow .18s}
+    .order-card:hover{transform:translateY(-4px);box-shadow:0 18px 46px rgba(169,120,41,0.08)}
+    .order-title{color:#9a4a00;font-weight:700}
+    .small-muted{color:#726a5f;font-size:13px}
+    /* Cart card matching auth look */
+    .cart-card{border-radius:14px;padding:18px;background:linear-gradient(180deg,#ffffff,#fffaf0);box-shadow:0 18px 46px rgba(10,10,10,0.04);transition:transform .36s,opacity .36s;overflow:hidden}
+    .cart-row{display:flex;justify-content:space-between;align-items:center}
+    .cart-total-label{font-weight:700}
+    .auth-secondary{background:linear-gradient(180deg,#f3f1ef,#ffffff);color:#1f2937;padding:10px 14px;border-radius:10px;border:1px solid #ece7e1;box-shadow:none}
+    .auth-secondary:hover{background:linear-gradient(180deg,#fff,#fbfbfb)}
+    </style>
+    <!-- Optional Firebase (enable by pasting your config into FIREBASE_CONFIG below) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+                // Paste your Firebase web app config here to enable shared persistence across visitors.
+                // Example: const FIREBASE_CONFIG = { apiKey: "...", authDomain: "...", projectId: "...", ... };
+                // Note: We use the compat SDK already loaded via <script src="https://www.gstatic.com/firebasejs/.../firebase-app-compat.js">
+                // so do not use ESM imports here. If you want Firebase, just set FIREBASE_CONFIG below.
+
+        const FIREBASE_CONFIG = null; // <-- replace null with your Firebase config object
+        let firebaseEnabled = false;
+        let db = null;
+
+        async function initFirebaseIfNeeded(){
+            if(!FIREBASE_CONFIG) return;
+            try{
+                firebase.initializeApp(FIREBASE_CONFIG);
+                db = firebase.firestore();
+                firebaseEnabled = true;
+                // on load, fetch remote docs and merge into localStorage
+                await syncFromRemote();
+                console.log('Firebase initialized and synced');
+            }catch(err){ console.warn('Firebase init failed', err); }
+        }
+
+        // Read key-docs from Firestore (collection 'mm_shared', docs: 'mm_users','mm_cart','mm_orders')
+        async function syncFromRemote(){
+            if(!firebaseEnabled) return;
+            try{
+                const col = db.collection('mm_shared');
+                const keys = ['mm_users','mm_cart','mm_orders','mm_user'];
+                for(const k of keys){
+                    const doc = await col.doc(k).get();
+                    if(doc.exists){
+                        const val = doc.data().v || '';
+                        if(val){ localStorage.setItem(k, val); }
+                    }
+                }
+            }catch(e){ console.warn('syncFromRemote error', e); }
+        }
+
+        // Save localStorage values to Firestore (overwrites remote). Call after local saves.
+        async function remoteSaveAll(){
+            if(!firebaseEnabled) return;
+            try{
+                const col = db.collection('mm_shared');
+                const toSave = ['mm_users','mm_cart','mm_orders','mm_user'];
+                const batch = db.batch ? db.batch() : null;
+                for(const k of toSave){
+                    const v = localStorage.getItem(k) || '';
+                    const ref = col.doc(k);
+                    if(batch){ batch.set(ref, { v }); }
+                    else { await ref.set({ v }); }
+                }
+                if(batch) await batch.commit();
+            }catch(e){ console.warn('remoteSaveAll error', e); }
+        }
+        
+        // --- GitHub-backed JSON storage (optional) ---
+        // Configure at runtime: ghConfigure({ owner, repo, branch, pathPrefix, token })
+        const GITHUB_CONFIG = { owner: null, repo: null, branch: 'main', pathPrefix: 'data', token: null };
+
+        function ghConfigure(cfg={}){
+            if(cfg.owner) GITHUB_CONFIG.owner = cfg.owner;
+            if(cfg.repo) GITHUB_CONFIG.repo = cfg.repo;
+            if(cfg.branch) GITHUB_CONFIG.branch = cfg.branch;
+            if(cfg.pathPrefix) GITHUB_CONFIG.pathPrefix = cfg.pathPrefix.replace(/^\/+|\/+$/g,'');
+            if(cfg.token) GITHUB_CONFIG.token = cfg.token;
+            console.log('GitHub sync configured', GITHUB_CONFIG);
+        }
+
+        async function ghGetFile(key){
+            if(!GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo) return null;
+            const path = `${GITHUB_CONFIG.pathPrefix}/${key}.json`;
+            const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(GITHUB_CONFIG.branch)}`;
+            try{
+                const res = await fetch(url, { headers: { Accept: 'application/vnd.github.v3+json' } });
+                if(res.status === 200){ const j = await res.json(); const decoded = atob(j.content.replace(/\n/g,'')); return JSON.parse(decoded); }
+                return null;
+            }catch(e){ console.warn('ghGetFile error', e); return null; }
+        }
+
+        async function ghSaveFile(key, obj, message='Update from Mes a Mes'){
+            if(!GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo || !GITHUB_CONFIG.token) { console.warn('GitHub save skipped: missing config or token'); return; }
+            const path = `${GITHUB_CONFIG.pathPrefix}/${key}.json`;
+            const api = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${encodeURIComponent(path)}`;
+            try{
+                // check if exists for sha
+                const getRes = await fetch(api + `?ref=${encodeURIComponent(GITHUB_CONFIG.branch)}`, { headers:{ Accept: 'application/vnd.github.v3+json', Authorization: `token ${GITHUB_CONFIG.token}` } });
+                let sha = undefined;
+                if(getRes.status === 200){ const gj = await getRes.json(); sha = gj.sha; }
+                const body = { message, content: btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2)))), branch: GITHUB_CONFIG.branch };
+                if(sha) body.sha = sha;
+                const putRes = await fetch(api, { method:'PUT', headers:{ 'Content-Type':'application/json', Authorization: `token ${GITHUB_CONFIG.token}`, Accept: 'application/vnd.github.v3+json' }, body: JSON.stringify(body) });
+                if(!putRes.ok){ console.warn('ghSaveFile failed', await putRes.text()); }
+                else { console.log('ghSaveFile ok', key); }
+            }catch(e){ console.warn('ghSaveFile error', e); }
+        }
+
+        async function ghRemoteSaveAll(){
+            if(!GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo || !GITHUB_CONFIG.token) return;
+            try{
+                const keys = ['mm_users','mm_cart','mm_orders','mm_user'];
+                for(const k of keys){ const val = localStorage.getItem(k) || '[]'; try{ await ghSaveFile(k, JSON.parse(val), `Sync ${k} from Mes a Mes`); }catch(e){ /* if parse fails, save raw string */ await ghSaveFile(k, { raw: val }, `Sync ${k} (raw) from Mes a Mes`); } }
+            }catch(e){ console.warn('ghRemoteSaveAll error', e); }
+        }
+
+        async function ghSyncFromRepo(){
+            if(!GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo) return;
+            try{
+                const keys = ['mm_users','mm_cart','mm_orders','mm_user'];
+                for(const k of keys){ const data = await ghGetFile(k); if(data!==null){ // if the file stored a raw wrapper, handle
+                        if(typeof data === 'object' && data.raw && typeof data.raw === 'string'){ try{ localStorage.setItem(k, data.raw); }catch(e){} }
+                        else { localStorage.setItem(k, JSON.stringify(data)); }
+                    }
+                }
+            }catch(e){ console.warn('ghSyncFromRepo error', e); }
+        }
+    </script>
+</head>
+<body class="bg-gray-50" style="min-height:100%;display:flex;flex-direction:column">
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-amber-800">Mes a Mes</h1>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 items-center">
+                    <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                    <li><a href="index.html#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                    <li><a href="index.html#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                    <li><a href="index.html#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                    <li><a href="index.html#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                    <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                    <li><a href="index.html#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                    <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition font-semibold">Mi cuenta</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-amber-800" id="menuBtn">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg absolute w-full left-0 top-full">
+            <ul class="flex flex-col items-center py-4 space-y-4">
+                <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                <li><a href="index.html#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                <li><a href="index.html#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                <li><a href="index.html#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                <li><a href="index.html#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                <li><a href="index.html#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition">Mi cuenta</a></li>
+            </ul>
+        </div>
+    </header>
+    <div class="container">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold">Mi cuenta</h1>
+            <a href="index.html" class="text-amber-600 font-semibold">Volver al sitio</a>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <div class="auth-card max-w-xl mx-auto bg-white p-0 shadow">
+                    <div id="authTabs" class="auth-tabs">
+                        <div data-tab="login" class="auth-tab active">Iniciar sesión</div>
+                        <div data-tab="register" class="auth-tab">Registrarse</div>
+                    </div>
+                    <div id="tabIndicatorWrap" style="padding:0 12px; background:transparent;">
+                        <div id="tabIndicator" class="tab-indicator" style="width:50%; transform:translateX(0%)"></div>
+                    </div>
+                    <div class="auth-body">
+                        <div id="authContent">
+                            <form id="loginForm">
+                                <div class="mb-3">
+                                    <input id="loginEmail" placeholder="Email" class="auth-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <input id="loginPass" placeholder="Contraseña" type="password" class="auth-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" id="doLogin" class="auth-submit">Entrar</button>
+                                </div>
+                                <div class="auth-note">¿Olvidaste tu contraseña? Usa el enlace de recuperación en tu email.</div>
+                            </form>
+
+                            <form id="registerForm" class="hidden">
+                                <div class="mb-3">
+                                    <input id="regName" placeholder="Nombre" class="auth-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <input id="regEmail" placeholder="Email" class="auth-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <input id="regPass" placeholder="Contraseña" type="password" class="auth-input" />
+                                </div>
+                                <div class="mb-3">
+                                    <button type="button" id="doRegister" class="auth-submit">Registrarse</button>
+                                </div>
+                                <div class="auth-note">Al registrarte aceptas los términos y condiciones.</div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="messages" class="mt-4 text-sm text-gray-600"></div>
+            </div>
+
+            <div>
+                <div id="accountPanel" class="bg-white p-6 rounded-lg shadow hidden">
+                    <h2 class="font-semibold text-lg mb-2">Bienvenido, <span id="accName"></span></h2>
+                    <p class="text-sm mb-2">Email: <span id="accEmail"></span></p>
+                    <!-- Points widget -->
+                    <div class="mb-4 p-4 rounded-lg border border-amber-100 bg-gradient-to-b from-amber-50 to-white">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <div class="text-sm text-gray-600">Puntos de fidelidad</div>
+                                <div class="text-2xl font-bold text-amber-700"><span id="accPoints">0</span> pts</div>
+                                <div class="text-xs text-gray-500">Miembro desde: <span id="accSince">-</span></div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-500">Objetivo:</div>
+                                <div class="text-sm font-semibold text-amber-700">50,000 pts</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-white rounded-full h-4 overflow-hidden border border-amber-200">
+                            <div id="pointsBar" class="h-4 bg-amber-600 transition-all duration-300" style="width:0%"></div>
+                        </div>
+                        <div id="pointsProgressText" class="text-xs text-gray-600 mt-2">0 / 50,000</div>
+                        <div class="mt-3">
+                            <label class="block text-sm text-gray-700 mb-1">Canjear puntos</label>
+                            <button id="openRedeem" class="w-full p-2 auth-submit small">Abrir canjeador</button>
+                            <div id="redeemMessage" class="text-sm text-gray-600 mt-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Redeem modal (in-panel, matches ordersPanel style) -->
+                    <div id="redeemModal" class="hidden" style="position:absolute;inset:18px;z-index:60;display:none;align-items:flex-start;justify-content:center;">
+                        <div class="bg-white w-full max-w-md rounded-xl p-6 shadow-lg" style="animation:panelIn .34s forwards;">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">Canjear puntos</h3>
+                                <button id="redeemClose" class="text-gray-500 hover:text-gray-800">Cerrar ✕</button>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-sm text-gray-600 mb-3">Selecciona un producto para canjear. Verifica que tengas suficientes puntos.</p>
+                                    <div id="redeemProducts" class="space-y-3">
+                                        <!-- products rendered here -->
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-amber-50">
+                                    <form id="redeemForm" class="space-y-3">
+                                        <label class="text-sm text-gray-700">Nombre de quien recibirá</label>
+                                        <input id="recipName" class="auth-input" required />
+                                        <label class="text-sm text-gray-700">Dirección / Detalles de entrega</label>
+                                        <input id="recipAddress" class="auth-input" required />
+                                        <label class="text-sm text-gray-700">Personalización / Mensaje</label>
+                                        <textarea id="recipNote" class="auth-input" rows="4"></textarea>
+                                        <div class="flex gap-2">
+                                            <button id="redeemSubmit" type="button" class="auth-submit small">Confirmar canje</button>
+                                            <a id="previewProduct" class="auth-secondary flex items-center justify-center" target="_blank" href="#">Ver producto</a>
+                                        </div>
+                                        <div id="redeemFeedback" class="text-sm text-gray-600"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="font-semibold mb-3 text-amber-700">Mis compras</h3>
+                    <div id="accOrdersContainer" class="space-y-3 mb-4"></div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <button id="viewAllOrders" class="text-amber-600 underline text-sm">Ver todas las compras</button>
+                        <span id="ordersCount" class="text-xs text-gray-500"></span>
+                    </div>
+
+                    <!-- In-panel orders modal (overlays only accountPanel) -->
+                    <div id="ordersPanel" class="hidden" style="position:absolute;inset:18px;z-index:60;display:none;align-items:flex-start;justify-content:center;">
+                        <div class="bg-white w-full max-w-md rounded-xl p-6 shadow-lg" style="animation:panelIn .34s forwards;">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold">Historial completo de compras</h3>
+                                <button id="ordersClose" class="text-gray-500 hover:text-gray-800">Cerrar ✕</button>
+                            </div>
+                            <div id="ordersList" class="space-y-3 max-h-[60vh] overflow-auto"></div>
+                            <div class="mt-4 flex gap-2">
+                                <button id="ordersExport" class="auth-secondary">Exportar</button>
+                                <button id="ordersDone" class="auth-submit small">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="logout" class="auth-muted">Cerrar sesión</button>
+                    <!-- GitHub sync config (optional) -->
+                    <div id="ghConfigWrap" class="mt-4">
+                        <button id="toggleGhConfig" class="auth-secondary small">Configurar sincronización con GitHub</button>
+                        <div id="ghConfigPanel" class="hidden mt-3 p-3 bg-white border rounded" style="display:none;">
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="text-sm text-gray-700">Owner (usuario)</label>
+                                    <input id="gh_owner" class="auth-input" />
+                                </div>
+                                <div>
+                                    <label class="text-sm text-gray-700">Repo (nombre)</label>
+                                    <input id="gh_repo" class="auth-input" />
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-sm text-gray-700">Branch</label>
+                                        <input id="gh_branch" class="auth-input" placeholder="main" />
+                                    </div>
+                                    <div>
+                                        <label class="text-sm text-gray-700">Prefijo de ruta</label>
+                                        <input id="gh_path" class="auth-input" placeholder="data" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-sm text-gray-700">Token (Personal Access Token)</label>
+                                    <input id="gh_token" type="password" class="auth-input" />
+                                </div>
+                                <div class="flex gap-2">
+                                    <button id="ghSaveBtn" class="auth-submit small">Guardar y sincronizar</button>
+                                    <button id="ghDisableBtn" class="auth-secondary small">Desactivar</button>
+                                </div>
+                                <div id="ghStatus" class="text-sm text-gray-600"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cartPanel" class="cart-card mt-6">
+                    <h3 class="font-semibold mb-3">Carrito</h3>
+                    <div id="cartItemsWrap" class="mb-4">
+                        <ul id="cartList" class="list-disc ml-5 text-sm mb-4"></ul>
+                    </div>
+                    <div class="cart-row mb-4">
+                        <div class="cart-total-label">Total:</div>
+                        <div id="cartTotal" class="font-semibold">$0</div>
+                    </div>
+                    <div class="flex gap-3">
+                        <button id="checkout" class="flex-1 auth-submit">Pagar</button>
+                        <button id="clearCart" class="flex-1 auth-secondary">Vaciar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Purchase modal -->
+        <div id="purchaseModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white max-w-3xl w-full rounded-xl shadow-lg p-6 mx-4 overflow-auto max-h-[80vh]" style="border-radius:14px;">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold">Completar compra</h3>
+                    <button id="purchaseClose" class="text-gray-500 hover:text-gray-800">Cerrar ✕</button>
+                </div>
+                <div id="purchaseBody" class="space-y-4">
+                    <!-- shipping form and per-item customization will be rendered here -->
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button id="purchaseConfirm" class="auth-submit">Confirmar compra (simulada)</button>
+                </div>
+            </div>
+        </div>
+
+    <!-- All orders modal replaced by in-panel orders modal (inserted inside accountPanel) -->
+
+    <script>
+        // Simple frontend-only auth/cart using localStorage
+        const usersKey = 'mm_users';
+        const currentKey = 'mm_user';
+        const cartKey = 'mm_cart';
+        const ordersKey = 'mm_orders';
+
+    // auth tabs and elements
+    const authTabs = document.getElementById('authTabs');
+    const tabIndicator = document.getElementById('tabIndicator');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+        const messages = document.getElementById('messages');
+        const accountPanel = document.getElementById('accountPanel');
+        const accName = document.getElementById('accName');
+        const accEmail = document.getElementById('accEmail');
+        const accPoints = document.getElementById('accPoints');
+        const accOrders = document.getElementById('accOrders');
+        const logoutBtn = document.getElementById('logout');
+        const cartList = document.getElementById('cartList');
+        const cartTotal = document.getElementById('cartTotal');
+        const checkout = document.getElementById('checkout');
+        const clearCart = document.getElementById('clearCart');
+
+        // Tab switching animation with centered gradient indicator
+        function positionIndicatorFor(tabEl){
+            const tabs = Array.from(authTabs.querySelectorAll('[data-tab]'));
+            const idx = tabs.indexOf(tabEl);
+            if(idx === -1) return;
+            const rect = tabEl.getBoundingClientRect();
+            const wrapRect = authTabs.getBoundingClientRect();
+            // indicator width is 60% of tab width and centered
+            const indW = Math.round(rect.width * 0.6);
+            const left = Math.round((rect.left - wrapRect.left) + (rect.width - indW)/2);
+            tabIndicator.style.width = indW + 'px';
+            tabIndicator.style.transform = `translateX(${left}px)`;
+        }
+
+        authTabs.addEventListener('click', (e)=>{
+            const t = e.target.closest('[data-tab]'); if(!t) return;
+            Array.from(authTabs.querySelectorAll('[data-tab]')).forEach(c=>c.classList.remove('active'));
+            t.classList.add('active');
+            if(t.getAttribute('data-tab') === 'login'){ loginForm.classList.remove('hidden'); registerForm.classList.add('hidden'); }
+            else { registerForm.classList.remove('hidden'); loginForm.classList.add('hidden'); }
+            positionIndicatorFor(t);
+        });
+
+        // ensure indicator is correctly sized on load and resize
+        window.addEventListener('load', ()=>{ const active = authTabs.querySelector('.auth-tab.active'); if(active) positionIndicatorFor(active); });
+        window.addEventListener('resize', ()=>{ const active = authTabs.querySelector('.auth-tab.active'); if(active) positionIndicatorFor(active); });
+
+        // Ripple effect on auth buttons
+        function addRipple(btn){ btn.addEventListener('click', function(e){ const rect = btn.getBoundingClientRect(); const ripple = document.createElement('span'); const size = Math.max(rect.width, rect.height); ripple.style.position='absolute'; ripple.style.width = ripple.style.height = size+'px'; ripple.style.left = (e.clientX - rect.left - size/2)+'px'; ripple.style.top = (e.clientY - rect.top - size/2)+'px'; ripple.style.background = 'rgba(255,255,255,0.3)'; ripple.style.borderRadius='50%'; ripple.style.transform='scale(0)'; ripple.style.transition='transform .45s, opacity .6s'; ripple.style.pointerEvents='none'; ripple.className='ripple'; ripple.style.zIndex = 10; btn.style.position='relative'; btn.appendChild(ripple); requestAnimationFrame(()=>{ ripple.style.transform='scale(1)'; ripple.style.opacity='1'; }); setTimeout(()=>{ ripple.style.opacity='0'; ripple.style.transform='scale(1.6)'; }, 300); setTimeout(()=>{ ripple.remove(); }, 900); }); }
+        Array.from(document.getElementsByClassName('auth-submit')).forEach(addRipple);
+
+        function loadUsers(){ return JSON.parse(localStorage.getItem(usersKey)||'[]'); }
+    function saveUsers(u){ localStorage.setItem(usersKey, JSON.stringify(u)); if(typeof remoteSaveAll === 'function') remoteSaveAll(); }
+    function setCurrent(u){ localStorage.setItem(currentKey, JSON.stringify(u)); if(typeof remoteSaveAll === 'function') remoteSaveAll(); }
+        function getCurrent(){ return JSON.parse(localStorage.getItem(currentKey)); }
+        function loadCart(){ return JSON.parse(localStorage.getItem(cartKey)||'[]'); }
+    function saveCart(c){ localStorage.setItem(cartKey, JSON.stringify(c)); if(typeof remoteSaveAll === 'function') remoteSaveAll(); if(typeof ghRemoteSaveAll === 'function') ghRemoteSaveAll(); }
+        function loadOrders(){ return JSON.parse(localStorage.getItem(ordersKey)||'[]'); }
+    function saveOrders(o){ localStorage.setItem(ordersKey, JSON.stringify(o)); if(typeof remoteSaveAll === 'function') remoteSaveAll(); if(typeof ghRemoteSaveAll === 'function') ghRemoteSaveAll(); }
+
+    function renderCart(){ const cart = loadCart(); const wrap = document.getElementById('cartItemsWrap'); cartList.innerHTML=''; let total=0; // normalize legacy items to new names/prices
+        const normalized = cart.map(it=>{
+            const n = {...it};
+            // Ajustes de nombres/precios recientes
+            if(n.product === 'Calendario tipo 2'){ n.product = 'Calendario peliculas'; if(!n.price || n.price<500) n.price = 9700; }
+            if(n.product === 'Clásico Minimalista' && n.price && n.price < 2000){ n.price = 9100; }
+            return n;
+        });
+        if(JSON.stringify(normalized)!==JSON.stringify(cart)){ saveCart(normalized); }
+        normalized.forEach((i,idx)=>{ const li=document.createElement('li'); const qty = i.qty || 1; const subtotal = (i.price * qty); li.className='mb-2'; li.innerHTML = `<div class="flex justify-between items-center"><div><div class="font-medium text-sm">${i.product}</div><div class="text-xs text-gray-500">x${qty} • ${i.meta && i.meta.text ? i.meta.text : ''}</div></div><div class="text-sm font-semibold">$${subtotal}</div></div>`; cartList.appendChild(li); total += subtotal; }); document.getElementById('cartTotal').textContent=`$${total}`; // small highlight animation for panel
+        const panel = document.getElementById('cartPanel'); if(panel){ panel.style.transition='transform .28s, box-shadow .28s'; panel.style.transform='translateY(-4px)'; panel.style.boxShadow='0 22px 54px rgba(169,120,41,0.06)'; setTimeout(()=>{ panel.style.transform='translateY(0)'; panel.style.boxShadow='0 18px 46px rgba(10,10,10,0.04)'; },220); }
+    }
+    function renderAccount(){
+        const u = getCurrent();
+        if(!u){ accountPanel.classList.add('hidden'); return; }
+        accountPanel.classList.remove('hidden');
+        // entrance animation
+        accountPanel.classList.remove('panel-animate'); void accountPanel.offsetWidth; accountPanel.classList.add('panel-animate');
+        accName.textContent=u.name; accEmail.textContent=u.email; accPoints.textContent=u.points||0; document.getElementById('accSince').textContent = u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '-';
+        // Recent purchases (show up to 4)
+        const orders = loadOrders().filter(o=>o.email===u.email).reverse();
+        const container = document.getElementById('accOrdersContainer'); container.innerHTML='';
+        const recent = orders.slice(0,4);
+        recent.forEach(o=>{
+            const card = document.createElement('div'); card.className='order-card mb-3';
+            const left = document.createElement('div'); left.innerHTML = `<div class="order-title">${(o.products && o.products.length)? o.products.map(it=>it.product).join(', '): (o.product||'Compra')}</div><div class="small-muted">${o.date}</div>`;
+            const right = document.createElement('div'); right.className='text-right'; right.innerHTML = `<div class="font-semibold">${o.total? '$'+o.total : (o.total===0? 'Canje' : '$'+(o.total||0))}</div><div class="text-xs text-gray-500">${o.pointsUsed? `${o.pointsUsed} pts canjeados` : (o.pointsEarned? `+${o.pointsEarned} pts` : '')}</div>`;
+            card.appendChild(left); card.appendChild(right); container.appendChild(card);
+        });
+        document.getElementById('ordersCount').textContent = `${orders.length} compras totales`;
+        updatePointsUI();
+    }
+
+
+        // Prevent native form submit to avoid reload
+        loginForm.onsubmit = e=>{ e.preventDefault(); };
+        registerForm.onsubmit = e=>{ e.preventDefault(); };
+
+        // Register (button-based forms)
+        document.getElementById('doRegister').addEventListener('click', ()=>{
+            const name=document.getElementById('regName').value; const email=document.getElementById('regEmail').value; const pass=document.getElementById('regPass').value;
+            const users=loadUsers(); if(users.find(x=>x.email===email)){ messages.textContent='Ya existe una cuenta con ese email'; return; }
+            const user={name,email,pass,points:0,createdAt:new Date().toISOString()}; users.push(user); saveUsers(users); setCurrent(user); messages.textContent='Cuenta creada y sesión iniciada'; renderAccount();
+        });
+
+    // Ensure session stays active if the stored current user matches an existing saved user
+    function hydrateCurrentFromUsers(){ const cur = getCurrent(); if(!cur) return; const users = loadUsers(); const found = users.find(u=>u.email===cur.email); if(found){ setCurrent(found); } else { localStorage.removeItem(currentKey); } }
+        // Login (button-based)
+        document.getElementById('doLogin').addEventListener('click', ()=>{
+            const email=document.getElementById('loginEmail').value; const pass=document.getElementById('loginPass').value; const users=loadUsers(); const u=users.find(x=>x.email===email && x.pass===pass);
+            if(!u){ messages.textContent='Email o contraseña incorrectos'; return; } setCurrent(u); messages.textContent='Sesión iniciada'; renderAccount();
+        });
+        // Logout
+        logoutBtn.onclick = ()=>{ localStorage.removeItem(currentKey); renderAccount(); messages.textContent='Cerraste sesión'; };
+
+        // Keep session active and UI in sync across tabs and after reloads
+        // When localStorage changes in any tab (including mm_user), rehydrate and re-render
+        window.addEventListener('storage', (e)=>{
+            if(!e) return;
+            const keysToWatch = [usersKey, currentKey, cartKey, ordersKey];
+            if(keysToWatch.includes(e.key)){
+                try { hydrateCurrentFromUsers(); } catch(_){}
+                try { renderAccount(); } catch(_){}
+                try { renderCart(); } catch(_){}
+                try { updatePointsUI(); } catch(_){}
+            }
+        });
+
+        // Cart actions
+        clearCart.onclick = ()=>{ saveCart([]); renderCart(); }
+        // Checkout opens the purchase modal so user can fill shipping/customization; confirming purchase is done in the modal
+        checkout.onclick = ()=>{
+            const u = getCurrent(); const cart = loadCart();
+            if(!u){ messages.textContent='Inicia sesión para comprar'; return; }
+            if(cart.length===0){ messages.textContent='El carrito está vacío'; return; }
+            renderPurchaseModal();
+        };
+
+            // Points & redeem logic
+            const MAX_POINTS = 50000;
+            const pointsBar = document.getElementById('pointsBar');
+            const pointsProgressText = document.getElementById('pointsProgressText');
+            const redeemMessage = document.getElementById('redeemMessage');
+
+            function updatePointsUI(){
+                const u=getCurrent();
+                const pts = u?.points||0;
+                const pct = Math.min(100, Math.round((pts / MAX_POINTS) * 100));
+                pointsBar.style.width = pct + '%';
+                pointsProgressText.textContent = `${pts} / ${MAX_POINTS}`;
+                accPoints.textContent = pts;
+            }
+
+        // NOTE: previous simple redeem flow removed in favor of modal-based canjeador.
+
+    // Initialization
+    (async function(){ await initFirebaseIfNeeded(); hydrateCurrentFromUsers(); renderCart(); renderAccount(); updatePointsUI(); })();
+
+    // GitHub config UI logic
+    (function(){
+        const toggle = document.getElementById('toggleGhConfig');
+        const panel = document.getElementById('ghConfigPanel');
+        const saveBtn = document.getElementById('ghSaveBtn');
+        const disableBtn = document.getElementById('ghDisableBtn');
+        const status = document.getElementById('ghStatus');
+        const ownerEl = document.getElementById('gh_owner');
+        const repoEl = document.getElementById('gh_repo');
+        const branchEl = document.getElementById('gh_branch');
+        const pathEl = document.getElementById('gh_path');
+        const tokenEl = document.getElementById('gh_token');
+
+        function loadLocalConfig(){ try{ const raw = localStorage.getItem('gh_config'); if(!raw) return; const c = JSON.parse(raw); ownerEl.value = c.owner||''; repoEl.value = c.repo||''; branchEl.value = c.branch||'main'; pathEl.value = c.pathPrefix||'data'; tokenEl.value = c.token||''; ghConfigure(c); status.textContent = 'Configuración cargada (no sincronizada)'; }catch(e){} }
+
+        toggle.addEventListener('click', ()=>{ if(panel.classList.contains('hidden')){ panel.classList.remove('hidden'); panel.style.display='block'; } else { panel.classList.add('hidden'); panel.style.display='none'; } });
+
+        saveBtn.addEventListener('click', async ()=>{
+            const cfg = { owner: ownerEl.value.trim(), repo: repoEl.value.trim(), branch: branchEl.value.trim()||'main', pathPrefix: pathEl.value.trim()||'data', token: tokenEl.value.trim() };
+            if(!cfg.owner || !cfg.repo || !cfg.token){ status.textContent = 'Owner, repo y token son obligatorios'; return; }
+            localStorage.setItem('gh_config', JSON.stringify(cfg)); ghConfigure(cfg); status.textContent = 'Configuración guardada. Sincronizando...';
+            try{ await ghSyncFromRepo(); status.textContent = 'Datos descargados desde repo (si existían)'; await ghRemoteSaveAll(); status.textContent = 'Sincronización completa'; renderCart(); renderAccount(); }catch(e){ status.textContent = 'Error sincronizando: ' + (e && e.message ? e.message : e); }
+        });
+
+        disableBtn.addEventListener('click', ()=>{
+            localStorage.removeItem('gh_config'); ghConfigure({ owner:null, repo:null, token:null }); status.textContent = 'Sincronización de GitHub desactivada';
+        });
+
+        // on load, populate if saved
+        try{ const saved = JSON.parse(localStorage.getItem('gh_config')||'null'); if(saved){ ownerEl.value = saved.owner||''; repoEl.value = saved.repo||''; branchEl.value = saved.branch||'main'; pathEl.value = saved.pathPrefix||'data'; tokenEl.value = saved.token||''; ghConfigure(saved); status.textContent = 'Configuración cargada (desde localStorage)'; } }catch(e){}
+    })();
+
+    // ensure checkout button has ripple
+    const checkoutBtn = document.getElementById('checkout'); if(checkoutBtn) addRipple(checkoutBtn);
+    // bind ripples to any remaining auth-submit buttons (e.g., openRedeem)
+    Array.from(document.getElementsByClassName('auth-submit')).forEach(btn=>{ try{ addRipple(btn); }catch(e){} });
+
+    // orders panel buttons ripple and export stub
+    const ordersExport = document.getElementById('ordersExport'); if(ordersExport){ ordersExport.addEventListener('click', ()=>{
+        console.log('ordersExport clicked');
+        const u = getCurrent(); if(!u) return;
+        const all = loadOrders().filter(o=>o.email===u.email).reverse();
+        // render PNG with stronger framed rounded rect, shadow and gradient stroke
+    const pad = 28; const lineH = 36; const width = 900; const innerW = width - pad*2; const entryH = 80; const rowsH = all.length * entryH; const headerH = 76; const height = Math.max(360, headerH + pad + rowsH + pad);
+        const c = document.createElement('canvas'); c.width = width; c.height = height; const ctx = c.getContext('2d');
+        // background
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,width,height);
+
+        // Company and export date (top-left, outside frame)
+        ctx.fillStyle = '#1f2937'; ctx.font = '800 20px Inter, Arial'; ctx.fillText('Mes a Mes', pad, 40);
+        ctx.font = '13px Inter, Arial'; ctx.fillStyle = '#6b6b6b'; ctx.fillText(`Exportado: ${new Date().toLocaleString()}`, pad, 60);
+
+        // framed rounded rectangle
+        const frameX = pad; const frameY = headerH; const frameW = innerW; const frameH = height - headerH - pad;
+        const r = 18;
+        // drop shadow (soft)
+        ctx.fillStyle = 'rgba(0,0,0,0.06)'; roundRect(ctx, frameX+6, frameY+8, frameW, frameH, r); ctx.fill();
+        // inner fill
+        ctx.fillStyle = '#fffaf5'; roundRect(ctx, frameX, frameY, frameW, frameH, r); ctx.fill();
+        // thick gradient border
+        const grad = ctx.createLinearGradient(frameX, frameY, frameX + frameW, frameY + frameH);
+        grad.addColorStop(0, '#f59e0b'); grad.addColorStop(0.5, '#f97316'); grad.addColorStop(1, '#b45309');
+        ctx.lineWidth = 10; ctx.strokeStyle = grad; roundRect(ctx, frameX+5, frameY+5, frameW-10, frameH-10, r-5); ctx.stroke();
+
+        // text inside frame
+    const textX = frameX + 26; let y = frameY + 40;
+        ctx.font = '700 16px Inter, Arial'; ctx.fillStyle = '#9a4a00'; ctx.fillText('Historial de compras', textX, y);
+        y += 22;
+        ctx.font = '13px Inter, Arial'; ctx.fillStyle = '#374151';
+        all.forEach(o=>{
+            // title
+            y += 14;
+            const title = o.product || (o.items? o.items.map(i=>i.product).join(', ') : 'Compra');
+            ctx.font = '700 16px Inter, Arial'; ctx.fillStyle = '#1f2937'; ctx.fillText(title, textX, y);
+            // date on its own line, slightly smaller
+            const dateY = y + 18;
+            ctx.font = '12px Inter, Arial'; ctx.fillStyle = '#4b5563'; ctx.fillText(o.date, textX, dateY);
+            // total aligned to the right, same line as date
+            ctx.font = '12px Inter, Arial'; ctx.fillStyle = '#374151'; ctx.fillText((o.total? '$'+o.total : (o.total===0? 'Canje' : '$'+(o.total||0))), frameX + frameW - 130, dateY);
+            // separator line below the entry
+            const sepY = dateY + 18;
+            ctx.strokeStyle = 'rgba(0,0,0,0.04)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(textX, sepY); ctx.lineTo(frameX + frameW - 24, sepY); ctx.stroke();
+            // advance y to next entry (leave breathing room)
+            y = sepY + 12;
+        });
+
+        // helper for rounded rect
+        function roundRect(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r); ctx.closePath(); }
+
+        const url = c.toDataURL('image/png');
+        console.log('PNG generated, opening preview');
+        // open preview in new tab
+        const win = window.open(); if(win){
+            win.document.title = 'Preview - Historial';
+            const img = win.document.createElement('img'); img.src = url; img.style.maxWidth='100%'; img.style.display='block'; img.style.margin='20px auto'; win.document.body.style.background='#f6f6f6'; win.document.body.appendChild(img);
+        }
+        // also trigger download
+        const a = document.createElement('a'); a.href = url; a.download = `historial_${(u.email||'user').replace(/[^a-z0-9]/gi,'')}_${new Date().toISOString().slice(0,10)}.png`; document.body.appendChild(a); a.click(); a.remove();
+    }); }
+    const ordersDoneBtn = document.getElementById('ordersDone'); if(ordersDoneBtn){ addRipple(ordersDoneBtn); ordersDoneBtn.addEventListener('click', ()=>{ const p = document.getElementById('ordersPanel'); if(p){ p.classList.add('hidden'); p.style.display='none'; } }); }
+
+        // Expose a helper for tienda pages to add to cart (supports qty and meta, merges duplicates by product)
+        window.addToCart = function(product, price, qty=1, meta={}){
+            const cart = loadCart();
+            const idx = cart.findIndex(i=>i.product === product && JSON.stringify(i.meta||{}) === JSON.stringify(meta||{}));
+            if(idx > -1){ cart[idx].qty = (cart[idx].qty||1) + (qty||1); }
+            else { cart.push({product, price, qty: qty||1, meta: meta||{}}); }
+            saveCart(cart); renderCart(); updatePointsUI();
+        };
+
+        // --- Redeem modal logic and product catalog ---
+        const PRODUCTS = [
+            {id:1,title:'Producto A', href:'producto.html', cost:325},
+            {id:2,title:'Producto B', href:'producto2.html', cost:4015}
+        ];
+        const openRedeem = document.getElementById('openRedeem');
+        const redeemModal = document.getElementById('redeemModal');
+        const redeemClose = document.getElementById('redeemClose');
+        const redeemProducts = document.getElementById('redeemProducts');
+        const redeemSubmit = document.getElementById('redeemSubmit');
+        const previewProduct = document.getElementById('previewProduct');
+        const redeemFeedback = document.getElementById('redeemFeedback');
+
+        let selectedProductId = null;
+
+        function renderRedeemProducts(){
+            redeemProducts.innerHTML='';
+            PRODUCTS.forEach(p=>{
+                const card = document.createElement('div');
+                card.className = 'order-card flex items-center justify-between';
+                card.innerHTML = `<div><div class="order-title">${p.title}</div><div class="small-muted text-xs">${p.cost} pts</div></div><div><button data-id="${p.id}" class="chooseProduct auth-submit small" type="button">Seleccionar</button></div>`;
+                redeemProducts.appendChild(card);
+            });
+
+            Array.from(redeemProducts.querySelectorAll('.chooseProduct')).forEach(btn=>{
+                try{ addRipple(btn); }catch(e){}
+                btn.addEventListener('click', ()=>{
+                    selectedProductId = Number(btn.getAttribute('data-id'));
+                    const p = PRODUCTS.find(x=>x.id===selectedProductId);
+                    previewProduct.href = p.href;
+                    // highlight selected card
+                    Array.from(redeemProducts.querySelectorAll('.order-card')).forEach(c=>{ c.classList.remove('ring-2','ring-amber-200'); });
+                    const card = btn.closest('.order-card'); if(card) card.classList.add('ring-2','ring-amber-200');
+                    redeemFeedback.textContent = `Has seleccionado ${p.title} — ${p.cost} pts.`;
+                });
+            });
+        }
+
+        openRedeem.onclick = ()=>{ renderRedeemProducts(); // show as in-panel overlay
+            const panel = document.getElementById('redeemModal'); if(panel){ panel.classList.remove('hidden'); panel.style.display='flex'; const inner = panel.querySelector('.bg-white'); if(inner) inner.scrollIntoView({behavior:'smooth'}); }
+            redeemFeedback.textContent=''; };
+        redeemClose.onclick = ()=>{ const panel = document.getElementById('redeemModal'); if(panel){ panel.classList.add('hidden'); panel.style.display='none'; } };
+
+        redeemSubmit.onclick = ()=>{
+            const u = getCurrent(); if(!u){ redeemFeedback.textContent='Inicia sesión primero'; return; }
+            if(!selectedProductId){ redeemFeedback.textContent='Selecciona un producto'; return; }
+            const p = PRODUCTS.find(x=>x.id===selectedProductId);
+            const users = loadUsers(); const idx = users.findIndex(x=>x.email===u.email);
+            if(idx===-1){ redeemFeedback.textContent='Usuario no encontrado'; return; }
+            if((users[idx].points||0) < p.cost){ redeemFeedback.textContent = `No tienes suficientes puntos (${users[idx].points||0}). Te hacen falta ${p.cost - (users[idx].points||0)} pts.`; return; }
+
+            // collect personalization
+            const recipName = document.getElementById('recipName').value || u.name;
+            const recipAddress = document.getElementById('recipAddress').value || '';
+            const recipNote = document.getElementById('recipNote').value || '';
+
+            // deduct points and save
+            users[idx].points -= p.cost; saveUsers(users); setCurrent(users[idx]);
+            const orders = loadOrders();
+            const order = { email:u.email, product:`Canje - ${p.title}`, total:0, pointsUsed:p.cost, details:{recipName,recipAddress,recipNote,productHref:p.href}, date:new Date().toLocaleString() };
+            orders.push(order); saveOrders(orders);
+            renderAccount(); updatePointsUI(); redeemFeedback.textContent = `Canje confirmado: ${p.title}. Se descontaron ${p.cost} pts.`;
+
+            // notify via mailto (business and user). Business email: oc@oc.com
+            const business = 'oc@oc.com';
+            const subjectBiz = encodeURIComponent(`Nuevo canje - ${p.title} - ${u.email}`);
+            const bodyBiz = encodeURIComponent(`Pedido de canje\nUsuario: ${u.name} <${u.email}>\nProducto: ${p.title}\nPuntos usados: ${p.cost}\nNombre destinatario: ${recipName}\nDireccion: ${recipAddress}\nNota: ${recipNote}\nFecha: ${order.date}`);
+            const mailtoBiz = `mailto:${business}?subject=${subjectBiz}&body=${bodyBiz}`;
+
+            const subjectUser = encodeURIComponent(`Confirmación de canje - ${p.title}`);
+            const bodyUser = encodeURIComponent(`Hola ${u.name},\n\nHemos recibido tu canje por ${p.title}.\nPuntos descontados: ${p.cost}\nNombre destinatario: ${recipName}\nDireccion: ${recipAddress}\nNota: ${recipNote}\n\nGracias por comprar con nosotros.`);
+            const mailtoUser = `mailto:${u.email}?subject=${subjectUser}&body=${bodyUser}`;
+
+            // open mailto for business then for user (user can close tabs). This simulates notifications.
+            window.open(mailtoBiz, '_blank');
+            window.open(mailtoUser, '_blank');
+
+            // close modal after short delay
+            setTimeout(()=>{ const panel = document.getElementById('redeemModal'); if(panel){ panel.classList.add('hidden'); panel.style.display='none'; } },1200);
+        };
+
+        // close redeemModal when clicking outside inner card
+        const redeemPanelEl = document.getElementById('redeemModal');
+        if(redeemPanelEl){
+            redeemPanelEl.addEventListener('click', (e)=>{
+                if(e.target === redeemPanelEl){ redeemPanelEl.classList.add('hidden'); redeemPanelEl.style.display='none'; }
+            });
+        }
+
+        // Purchase modal logic
+        const purchaseModal = document.getElementById('purchaseModal');
+        const purchaseBody = document.getElementById('purchaseBody');
+        const purchaseClose = document.getElementById('purchaseClose');
+        const purchaseConfirm = document.getElementById('purchaseConfirm');
+
+        function renderPurchaseModal(){
+            const cart = loadCart(); if(cart.length===0){ messages.textContent='El carrito está vacío'; return; }
+            purchaseBody.innerHTML = '';
+            // Shipping fields
+            const ship = document.createElement('div'); ship.className='cart-card';
+            ship.innerHTML = `<h4 class="font-semibold text-amber-800 mb-3">Datos de envío</h4>
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-sm text-gray-700">Nombre</label>
+                        <input id="shipName" class="auth-input" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-700">Dirección</label>
+                        <input id="shipAddress" class="auth-input" />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-700">Teléfono</label>
+                        <input id="shipPhone" class="auth-input" />
+                    </div>
+                </div>`;
+            purchaseBody.appendChild(ship);
+
+            // Items with customization if needed
+            cart.forEach((it, idx)=>{
+                const div = document.createElement('div'); div.className='p-3 border rounded order-card';
+                div.innerHTML = `<div class="flex justify-between items-center mb-2"><div><strong>${it.product}</strong> x ${it.qty}</div><div class="text-sm font-semibold">$${it.price}</div></div>`;
+                // if product is customizable, show fields (we'll assume both are customizable for now)
+                const cust = document.createElement('div'); cust.className='space-y-2';
+                cust.innerHTML = `<label class="text-sm">Color / Opción</label><input data-idx="${idx}" class="auth-input custom-color" />
+                                  <label class="text-sm">Texto / Nombre</label><input data-idx="${idx}" class="auth-input custom-text" />
+                                  <label class="text-sm">Nota adicional</label><textarea data-idx="${idx}" class="auth-input custom-note"></textarea>`;
+                div.appendChild(cust); purchaseBody.appendChild(div);
+            });
+            purchaseModal.classList.remove('hidden'); purchaseModal.style.display='flex';
+        }
+
+    // previously opened a modal; checkout now performs direct simulated purchase (handler above)
+    purchaseClose.addEventListener('click', ()=>{ purchaseModal.classList.add('hidden'); purchaseModal.style.display='none'; });
+    try{ addRipple(purchaseConfirm); }catch(e){}
+
+        purchaseConfirm.addEventListener('click', ()=>{
+            const u = getCurrent(); if(!u){ messages.textContent='Inicia sesión para comprar'; return; }
+            const cart = loadCart(); if(cart.length===0){ messages.textContent='Carrito vacío'; return; }
+            // collect shipping
+            const shipName = document.getElementById('shipName').value || u.name;
+            const shipAddress = document.getElementById('shipAddress').value || '';
+            const shipPhone = document.getElementById('shipPhone').value || '';
+            // collect customizations
+            cart.forEach((it, idx)=>{
+                it.custom = {
+                    color: (document.querySelector(`.custom-color[data-idx="${idx}"]`)?.value||''),
+                    text: (document.querySelector(`.custom-text[data-idx="${idx}"]`)?.value||''),
+                    note: (document.querySelector(`.custom-note[data-idx="${idx}"]`)?.value||'')
+                };
+            });
+            // compute total
+            const total = cart.reduce((s,i)=>s + (i.price * (i.qty||1)),0);
+            const points = Math.floor(total/100);
+            // save order
+            const orders = loadOrders(); const order = { email:u.email, items:cart, total, pointsEarned:points, shipping:{shipName,shipAddress,shipPhone}, date:new Date().toLocaleString() };
+            orders.push(order); saveOrders(orders);
+            // award points
+            const users = loadUsers(); const idx = users.findIndex(x=>x.email===u.email); if(idx>-1){ users[idx].points=(users[idx].points||0)+points; saveUsers(users); setCurrent(users[idx]); }
+            // clear cart
+            saveCart([]); renderCart(); renderAccount(); updatePointsUI(); messages.textContent=`Compra simulada. Ganaste ${points} puntos.`;
+
+            // notify via mailto (business and user)
+            const business = 'oc@oc.com';
+            const subjectBiz = encodeURIComponent(`Nuevo pedido - ${u.email}`);
+            const bodyBiz = encodeURIComponent(`Nuevo pedido\nUsuario: ${u.name} <${u.email}>\nTotal: $${total}\nPuntos ganados: ${points}\nEnvio: ${shipName} / ${shipAddress} / ${shipPhone}\nItems:\n${cart.map(i=>`${i.product} x${i.qty} - ${JSON.stringify(i.custom)}`).join('\n')}`);
+            window.open(`mailto:${business}?subject=${subjectBiz}&body=${bodyBiz}`,'_blank');
+            const subjectUser = encodeURIComponent('Confirmación de pedido');
+            const bodyUser = encodeURIComponent(`Gracias ${u.name},\nHemos recibido tu pedido. Total: $${total}.\nPronto nos contactamos para coordinar.`);
+            window.open(`mailto:${u.email}?subject=${subjectUser}&body=${bodyUser}`,'_blank');
+
+            // close modal
+            purchaseModal.classList.add('hidden'); purchaseModal.style.display='none';
+        });
+
+    // Orders panel logic (in-panel overlay)
+    const ordersPanel = document.getElementById('ordersPanel');
+    const ordersList = document.getElementById('ordersList');
+    const ordersClose = document.getElementById('ordersClose');
+    const ordersDone = document.getElementById('ordersDone');
+
+    function renderOrdersPanel(){ const u = getCurrent(); if(!u){ ordersList.innerHTML = '<div class="p-4 bg-white border rounded">Inicia sesión para ver tus compras.</div>'; return; } const all = loadOrders().filter(o=>o.email===u.email).reverse(); if(all.length===0){ ordersList.innerHTML = '<div class="p-4 bg-white border rounded">No se encontraron compras.</div>'; return; } ordersList.innerHTML=''; all.forEach(o=>{ const card = document.createElement('div'); card.className='order-card'; const left = document.createElement('div'); const title = o.product || (o.items? o.items.map(i=>i.product).join(', '): 'Compra'); left.innerHTML = `<div class="order-title">${title}</div><div class="small-muted">${o.date}</div><div class="text-sm text-gray-700 mt-2">${o.shipping? ('Envio: '+ (o.shipping.shipAddress||'--')) : ''}</div>`; const right = document.createElement('div'); right.className='text-right'; right.innerHTML = `<div class="font-semibold">${o.total? '$'+o.total : (o.total===0? 'Canje' : '$'+(o.total||0))}</div><div class="text-xs text-gray-500">${o.pointsUsed? `${o.pointsUsed} pts canjeados` : (o.pointsEarned? `+${o.pointsEarned} pts` : '')}</div>`; card.appendChild(left); card.appendChild(right); ordersList.appendChild(card); }); }
+
+    ordersClose.addEventListener('click', ()=>{ ordersPanel.classList.add('hidden'); ordersPanel.style.display='none'; });
+    if(ordersDone) ordersDone.addEventListener('click', ()=>{ ordersPanel.classList.add('hidden'); ordersPanel.style.display='none'; });
+
+    // close when clicking outside inner panel area
+    ordersPanel.addEventListener('click', (e)=>{
+        if(e.target === ordersPanel){ ordersPanel.classList.add('hidden'); ordersPanel.style.display='none'; }
+    });
+
+    // Bind the "Ver todas las compras" button now that in-panel exists
+    const viewAllBtnGlobal = document.getElementById('viewAllOrders');
+    if(viewAllBtnGlobal){ viewAllBtnGlobal.addEventListener('click', ()=>{ renderOrdersPanel(); ordersPanel.classList.remove('hidden'); ordersPanel.style.display='flex'; const inner = ordersPanel.querySelector('.bg-white'); if(inner) inner.scrollIntoView({behavior:'smooth'}); }); }
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12" style="margin-top:auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-3xl font-bold text-amber-500 mb-2">Mes a Mes</h2>
+                    <p class="text-gray-400">Organizando tu tiempo desde 2018</p>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex space-x-6 mb-6">
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Términos y Condiciones</a>
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Política de Privacidad</a>
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Preguntas Frecuentes</a>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm">
+                        &copy; 2023 Mes a Mes - Todos los derechos reservados
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

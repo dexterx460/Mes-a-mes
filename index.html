@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes a Mes - Calendarios de Bolsillo Personalizados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        html, body{height:100%}
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+            min-height:100%;
+            display:flex;
+            flex-direction:column;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%), 
+                        url('https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80') no-repeat center center/cover;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 1s ease-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 1s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item {
+            transition: all 0.3s ease;
+        }
+
+    /* Footer adjustments to keep consistent height */
+    .site-footer{padding-top:0.75rem;padding-bottom:0.75rem}
+    .site-footer .container{padding-top:0;padding-bottom:0}
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .value-card:hover {
+            background-color: rgba(255, 241, 220, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-amber-800">Mes a Mes</h1>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 items-center">
+                    <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                    <li><a href="#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                    <li><a href="#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                    <li><a href="#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                    <li><a href="#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                    <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                    <li><a href="#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                    <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition font-semibold">Mi cuenta</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-amber-800" id="menuBtn">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden bg-white shadow-lg absolute w-full left-0 top-full">
+            <ul class="flex flex-col items-center py-4 space-y-4">
+                <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                <li><a href="#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                <li><a href="#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                <li><a href="#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                <li><a href="#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                <li><a href="#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition">Mi cuenta</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero min-h-screen flex items-center justify-center text-center fade-in">
+        <div class="container mx-auto px-4">
+            <h1 class="text-5xl md:text-6xl font-bold text-amber-800 mb-6 slide-in-left">Organiza tu vida con Mes a Mes</h1>
+            <p class="text-xl md:text-2xl text-gray-700 mb-10 max-w-3xl mx-auto slide-in-right">
+                Mini calendarios de bolsillo resistentes y personalizados que te ayudan a mantener el control de tu tiempo sin perder espacio ni elegancia.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#tienda" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105">
+                    Ver Productos
+                </a>
+                <a href="#contacto" class="border-2 border-amber-600 text-amber-600 hover:bg-amber-50 font-bold py-3 px-8 rounded-full transition transform hover:scale-105">
+                    Personalizar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="galeria" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-800 mb-12 fade-in">Descubre Mes a Mes</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Image 1 -->
+                <div class="gallery-item bg-white rounded-lg overflow-hidden shadow-md fade-in">
+                    <img src="imagenes/chandan-chaurasia-cXmyIJ8cc1A-unsplash.jpg" 
+                         alt="Tamaño pequeño del calendario" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Compacto y Práctico</h3>
+                        <p class="text-gray-600">Cabe perfectamente en cualquier bolsillo o billetera, sin sacrificar legibilidad.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 2 -->
+                <div class="gallery-item bg-white rounded-lg overflow-hidden shadow-md fade-in">
+                    <img src="imagenes/masjid-pogung-raya-mfW6CofzRCM-unsplash.jpg"
+                         alt="Estudiante usando calendario" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Ideal para Estudiantes</h3>
+                        <p class="text-gray-600">Marca tus exámenes, trabajos prácticos y fechas importantes de un vistazo.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 3 -->
+                <div class="gallery-item bg-white rounded-lg overflow-hidden shadow-md fade-in">
+                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
+                         alt="Calendario personalizado" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Totalmente Personalizable</h3>
+                        <p class="text-gray-600">Añade fotos, diseños exclusivos y frases que te inspiren cada día.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 4 -->
+                <div class="gallery-item bg-white rounded-lg overflow-hidden shadow-md fade-in">
+                    <img src="https://images.unsplash.com/photo-1573497491208-6b1acb260507?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
+                         alt="Profesional usando calendario" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Para Profesionales Ocupados</h3>
+                        <p class="text-gray-600">Mantén tus reuniones y plazos bajo control en todo momento.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 5 -->
+                <div class="gallery-item bg-white rounded-lg overflow-hidden shadow-md fade-in">
+                    <img src="imagenes/images (17).jpeg"
+                         alt="Adultos mayores usando calendario" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Ayuda para Todas las Edades</h3>
+                        <p class="text-gray-600">Ideal para mantener recordatorios médicos y eventos familiares.</p>
+                    </div>
+                </div>
+                
+                <!-- Image 6 -->
+                <div class="gallery-item bg-white rounded-lg overflow-hidden shadow-md fade-in">
+                    <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
+                         alt="Diseños variados de calendarios" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Variedad de Diseños</h3>
+                        <p class="text-gray-600">Desde minimalistas hasta coloridos, encuentra tu estilo perfecto.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Club / Loyalty Section -->
+    <section id="club" class="py-20 bg-amber-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2 slide-in-left">
+                    <h2 class="text-3xl md:text-4xl font-bold text-amber-800 mb-4">Club Mes a Mes</h2>
+                    <p class="text-gray-700 mb-6">Únete a nuestro programa de fidelidad y empieza a sumar puntos cada vez que compres. Canjeá puntos por productos exclusivos, descuentos y más. Es gratuito y muy fácil de usar.</p>
+                    <ul class="space-y-4 mb-6">
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-coins text-amber-600"></i>
+                            </div>
+                            <div>
+                                <strong class="text-gray-800">Ganá puntos por cada compra</strong>
+                                <div class="text-gray-600 text-sm">1 punto cada $100 comprados. Cuanto más compras, más beneficios.</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-gift text-amber-600"></i>
+                            </div>
+                            <div>
+                                <strong class="text-gray-800">Canjeá por productos</strong>
+                                <div class="text-gray-600 text-sm">Canjes desde 300 pts por artículos seleccionados y ofertas especiales solo para socios.</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-star text-amber-600"></i>
+                            </div>
+                            <div>
+                                <strong class="text-gray-800">Beneficios exclusivos</strong>
+                                <div class="text-gray-600 text-sm">Envíos, promociones periódicas y ahorro</div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="flex gap-4">
+                        <a href="cuenta.html" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105">Unirse al Club</a>
+                        <a href="tienda.html" class="border-2 border-amber-600 text-amber-600 hover:bg-amber-50 font-bold py-3 px-6 rounded-full transition">Ver productos canjeables</a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 slide-in-right">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-xl font-semibold text-amber-700 mb-4">Cómo funciona</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="bg-amber-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-amber-700">+1</div>
+                                <div class="text-sm text-gray-600">punto</div>
+                                <div class="text-xs text-gray-500 mt-2">por cada $100</div>
+                            </div>
+                            <div class="bg-amber-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-amber-700">300</div>
+                                <div class="text-sm text-gray-600">puntos</div>
+                                <div class="text-xs text-gray-500 mt-2">canje mínimo</div>
+                            </div>
+                            <div class="bg-amber-50 rounded-lg p-4 text-center">
+                                <div class="text-2xl font-bold text-amber-700">10%</div>
+                                <div class="text-sm text-gray-600">descuento</div>
+                                <div class="text-xs text-gray-500 mt-2">en la primera compra al registrarte</div>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-sm text-gray-600">
+                            <p>Los puntos se acreditan automáticamente al confirmar el pago. Podés ver tu saldo y canjear desde la sección "Mi cuenta".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mision" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" 
+                         alt="Misión de Mes a Mes" class="rounded-lg shadow-xl w-full max-h-96 object-cover slide-in-left">
+                </div>
+                <div class="md:w-1/2 slide-in-right">
+                    <h2 class="text-3xl md:text-4xl font-bold text-amber-800 mb-6">Nuestra Misión y Visión</h2>
+                    
+                    <div class="mb-8">
+                        <div class="flex items-start mb-4">
+                            <div class="bg-amber-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-bullseye text-amber-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-2">Misión</h3>
+                                <p class="text-gray-600">
+                                    Brindar una herramienta sencilla, accesible y personalizable para ayudar a las personas 
+                                    a organizarse, cumplir metas y reducir el estrés en su vida cotidiana.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-start mb-4">
+                            <div class="bg-amber-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-eye text-amber-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800 mb-2">Visión</h3>
+                                <p class="text-gray-600">
+                                    Llegar a todo el territorio de la República Argentina con un producto útil y accesible para 
+                                    cada persona que valore la organización tangible y la personalización única.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Physical Section -->
+    <section id="porque" class="py-20 bg-amber-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row-reverse items-center gap-12">
+                <div class="md:w-1/2">
+                    <img src="imagenes/behnam-norouzi-ADOkDLZvayc-unsplash.jpg" 
+                         alt="Comparación digital vs físico" class="rounded-lg shadow-xl w-full max-h-96 object-cover slide-in-right">
+                </div>
+                <div class="md:w-1/2 slide-in-left">
+                    <h2 class="text-3xl md:text-4xl font-bold text-amber-800 mb-6">¿Por qué un calendario en la era digital?</h2>
+                    <p class="text-gray-700 mb-6">
+                        En un mundo cada vez más digital, los calendarios físicos siguen siendo herramientas poderosas 
+                        para la gestión del tiempo. Nuestros pequeños calendarios de bolsillo ofrecen ventajas únicas:
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-2 rounded-full mr-4">
+                                <i class="fas fa-check text-amber-600"></i>
+                            </div>
+                            <span class="text-gray-700">
+                                <strong>Visualización tangible:</strong> Ver físicamente las fechas ayuda a tener una mejor comprensión del tiempo.
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-2 rounded-full mr-4">
+                                <i class="fas fa-check text-amber-600"></i>
+                            </div>
+                            <span class="text-gray-700">
+                                <strong>Sin distracciones:</strong> Sin notificaciones ni tentaciones de revisar otras apps.
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-2 rounded-full mr-4">
+                                <i class="fas fa-check text-amber-600"></i>
+                            </div>
+                            <span class="text-gray-700">
+                                <strong>Accesibilidad inmediata:</strong> No requiere batería ni conexión a internet.
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-2 rounded-full mr-4">
+                                <i class="fas fa-check text-amber-600"></i>
+                            </div>
+                            <span class="text-gray-700">
+                                <strong>Aprendizaje y memoria:</strong> Escribir a mano mejora la retención de información.
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="bg-amber-100 p-2 rounded-full mr-4">
+                                <i class="fas fa-check text-amber-600"></i>
+                            </div>
+                            <span class="text-gray-700">
+                                <strong>Satisfacción física:</strong> Tachar actividades completadas brinda una sensación de logro palpable.
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section id="valores" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-amber-800 mb-6 fade-in">Nuestra Diferencia y Valores</h2>
+            <p class="text-xl text-center text-gray-700 max-w-3xl mx-auto mb-16 fade-in">
+                Lo que nos hace únicos y guía cada calendario que creamos.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Value 1 -->
+                <div class="value-card bg-white border border-amber-100 rounded-lg p-8 transition fade-in">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-palette text-amber-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">Personalización Única</h3>
+                    <p class="text-center text-gray-600">
+                        Cada calendario puede ser diseñado según tus gustos. Fotos familiares, frases motivacionales, 
+                        tus colores favoritos o el logo de tu empresa: tú decides.
+                    </p>
+                </div>
+                
+                <!-- Value 2 -->
+                <div class="value-card bg-white border border-amber-100 rounded-lg p-8 transition fade-in">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-heart text-amber-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">Calidad y Durabilidad</h3>
+                    <p class="text-center text-gray-600">
+                        Materiales premium que resisten el uso diario. No se rompen, no se borran y caben perfectamente 
+                        en tu cartera o bolsillo para acompañarte todo el año.
+                    </p>
+                </div>
+                
+                <!-- Value 3 -->
+                <div class="value-card bg-white border border-amber-100 rounded-lg p-8 transition fade-in">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-user-friends text-amber-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">Cercanía con el Cliente</h3>
+                    <p class="text-center text-gray-600">
+                        Creemos en relaciones personales. Escuchamos tus necesidades y trabajamos contigo para crear 
+                        el calendario perfecto que se adapte a tu estilo de vida.
+                    </p>
+                </div>
+                
+                <!-- Value 4 -->
+                <div class="value-card bg-white border border-amber-100 rounded-lg p-8 transition fade-in">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-hands-helping text-amber-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">Compromiso Social</h3>
+                    <p class="text-center text-gray-600">
+                        Parte de nuestras ganancias se destinan a organizaciones que promueven la educación y el 
+                        desarrollo comunitario en Argentina.
+                    </p>
+                </div>
+                
+                <!-- Value 5 -->
+                <div class="value-card bg-white border border-amber-100 rounded-lg p-8 transition fade-in">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-lightbulb text-amber-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">Creatividad Sin Límites</h3>
+                    <p class="text-center text-gray-600">
+                        Nuestro equipo diseña constantemente nuevos estilos y formatos para adaptarse a las tendencias 
+                        y necesidades cambiantes de nuestros clientes.
+                    </p>
+                </div>
+                
+                <!-- Value 6 -->
+                <div class="value-card bg-white border border-amber-100 rounded-lg p-8 transition fade-in">
+                    <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i class="fas fa-balance-scale text-amber-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-gray-800 mb-3">Ética Laboral</h3>
+                    <p class="text-center text-gray-600">
+                        Trabajamos con responsabilidad, respeto y transparencia. Nuestros proveedores y empleados son 
+                        tratados con justicia y dignidad en cada etapa del proceso.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="py-20 bg-amber-800 text-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-6 fade-in">Contáctanos</h2>
+            <p class="text-xl text-center mb-16 max-w-3xl mx-auto fade-in">
+                Estamos aquí para ayudarte a crear el calendario perfecto. <br>
+                ¡Escríbenos y te responderemos en menos de 48 horas!
+            </p>
+            
+            <div class="flex flex-col lg:flex-row gap-12">
+                <div class="lg:w-1/2 fade-in">
+                    <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block mb-2">Tu Nombre</label>
+                            <input type="text" id="name" class="w-full px-4 py-3 rounded-lg bg-amber-700 border border-amber-600 focus:outline-none focus:ring-2 focus:ring-white placeholder-amber-300" placeholder="Nombre completo">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block mb-2">Correo Electrónico</label>
+                            <input type="email" id="email" class="w-full px-4 py-3 rounded-lg bg-amber-700 border border-amber-600 focus:outline-none focus:ring-2 focus:ring-white placeholder-amber-300" placeholder="tu@email.com">
+                        </div>
+                        
+                        <div>
+                            <label for="phone" class="block mb-2">Teléfono (opcional)</label>
+                            <input type="tel" id="phone" class="w-full px-4 py-3 rounded-lg bg-amber-700 border border-amber-600 focus:outline-none focus:ring-2 focus:ring-white placeholder-amber-300" placeholder="+54 11 1234-5678">
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block mb-2">Tu Mensaje</label>
+                            <textarea id="message" rows="5" class="w-full px-4 py-3 rounded-lg bg-amber-700 border border-amber-600 focus:outline-none focus:ring-2 focus:ring-white placeholder-amber-300" placeholder="Cuéntanos sobre el calendario que estás buscando..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-white text-amber-800 hover:bg-amber-100 font-bold py-4 px-6 rounded-lg transition transform hover:scale-105">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="lg:w-1/2 fade-in">
+                    <div class="bg-amber-700 bg-opacity-50 rounded-lg p-8 h-full">
+                        <h3 class="text-2xl font-bold mb-6">Datos de Contacto</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="bg-white bg-opacity-20 p-3 rounded-full mr-4">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Ubicación</h4>
+                                    <p>Buenos Aires, Argentina <br>
+                                    <span class="text-amber-200">(Enviamos a todo el país)</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-white bg-opacity-20 p-3 rounded-full mr-4">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Correo Electrónico</h4>
+                                    <p>mesamescompany@gmail.com</p>
+                                </div>
+                            </div>
+                            
+                            
+                            <div class="flex items-start">
+                                <div class="bg-white bg-opacity-20 p-3 rounded-full mr-4">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">Horario de Atención</h4>
+                                    <p>Lunes a Viernes: 9:00 - 18:00 hs <br>
+                                    Sábados: 10:00 - 13:00 hs</p>
+                                </div>
+                            </div>
+                            
+                        
+                        <div class="mt-8">
+                            <h4 class="font-semibold mb-4">Síguenos en Redes</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 w-10 h-10 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 w-10 h-10 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 w-10 h-10 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-tiktok"></i>
+                                </a>
+                                <a href="#" class="bg-white bg-opacity-20 hover:bg-opacity-30 w-10 h-10 rounded-full flex items-center justify-center transition">
+                                    <i class="fab fa-pinterest-p"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer bg-gray-900 text-white py-12" style="margin-top:auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-3xl font-bold text-amber-500 mb-2">Mes a Mes</h2>
+                    <p class="text-gray-400">Organizando tu tiempo desde 2018</p>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end">
+                    <div class="flex space-x-6 mb-6">
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Términos y Condiciones</a>
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Política de Privacidad</a>
+                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Preguntas Frecuentes</a>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm">
+                        &copy; 2023 Mes a Mes - Todos los derechos reservados
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Close mobile menu when clicking a link
+        const mobileLinks = document.querySelectorAll('#mobileMenu a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+        
+        // Animation on scroll (fix: remove opacity-0 instead of adding a non-existent class)
+        const observerOptions = {
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('opacity-0');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(element => {
+            element.classList.add('opacity-0');
+            observer.observe(element);
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Todas las compras - Mes a Mes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        html, body{height:100%}
+        body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; min-height:100%; display:flex; flex-direction:column}
+        .container{max-width:960px;margin:0 auto;padding:24px}
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container" style="flex:1 0 auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-amber-700">Historial de compras</h1>
+            <div class="flex items-center gap-4">
+                <a href="cuenta.html" class="text-amber-600">Volver a mi cuenta</a>
+                <a href="index.html" class="text-gray-600">Inicio</a>
+            </div>
+        </header>
+
+        <div id="history" class="space-y-4"></div>
+
+        <div class="mt-8">
+            <button id="backBtn" class="bg-amber-600 text-white py-2 px-4 rounded">Volver</button>
+        </div>
+    </div>
+    <footer class="bg-gray-900 text-white py-8" style="margin-top:auto">
+        <div class="container">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h2 class="text-2xl font-bold text-amber-500">Mes a Mes</h2>
+                    <p class="text-gray-400">Organizando tu tiempo desde 2018</p>
+                </div>
+                <div class="text-gray-400 text-sm">© 2023 Mes a Mes - Todos los derechos reservados</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const ordersKey = 'mm_orders';
+        const currentKey = 'mm_user';
+        function getCurrent(){ return JSON.parse(localStorage.getItem(currentKey)); }
+        function loadOrders(){ return JSON.parse(localStorage.getItem(ordersKey)||'[]'); }
+
+        // Determine which user's orders to show: prefer current session, otherwise check mm_view_orders_for set by cuenta.html
+        const container = document.getElementById('history');
+        let user = getCurrent();
+        try{ if(!user){ const viewFor = localStorage.getItem('mm_view_orders_for'); if(viewFor) { user = { email: viewFor }; localStorage.removeItem('mm_view_orders_for'); } } }catch(e){}
+        if(!user){ container.innerHTML = '<div class="p-4 bg-white border rounded">Inicia sesión en <a href="cuenta.html" class="text-amber-600">Mi cuenta</a> para ver tus compras.</div>'; }
+        else {
+            const orders = loadOrders().filter(o=>o.email===user.email).reverse();
+            if(orders.length===0){ container.innerHTML = '<div class="p-4 bg-white border rounded">No se encontraron compras.</div>'; }
+            else {
+                orders.forEach(o=>{
+                    const card = document.createElement('div'); card.className='p-4 bg-white border rounded flex justify-between items-start';
+                    const left = document.createElement('div');
+                    const title = o.product || (o.items? o.items.map(i=>i.product).join(', '): 'Compra');
+                    left.innerHTML = `<div class="font-semibold text-amber-700">${title}</div><div class="text-xs text-gray-500">${o.date}</div><div class="text-sm text-gray-700 mt-2">${o.shipping? ('Envio: '+ (o.shipping.shipAddress||'--')) : ''}</div>`;
+                    const right = document.createElement('div'); right.className='text-right'; right.innerHTML = `<div class="font-semibold">${o.total? '$'+o.total : (o.total===0? 'Canje' : '$'+(o.total||0))}</div><div class="text-xs text-gray-500">${o.pointsUsed? `${o.pointsUsed} pts canjeados` : (o.pointsEarned? `+${o.pointsEarned} pts` : '')}</div>`;
+                    card.appendChild(left); card.appendChild(right); container.appendChild(card);
+                });
+            }
+        }
+
+        document.getElementById('backBtn').addEventListener('click', ()=>{ window.location.href='cuenta.html'; });
+    </script>
+</body>
+</html>

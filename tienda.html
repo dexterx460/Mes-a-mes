@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tienda - Mes a Mes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    html, body{height:100%}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; min-height:100%; display:flex; flex-direction:column}
+        .container{max-width:1100px;margin:0 auto;padding:24px}
+    /* fallback for critical utilities in case Tailwind CDN is blocked or slow */
+    .hidden{display:none}
+    /* --- New shop visual styles: gradients, curves, micro-animations --- */
+    .product-card{
+        border-radius:14px;
+        overflow:hidden;
+        /* match account panel subtle gradient */
+        background:linear-gradient(180deg,#fffaf0,#ffffff);
+        box-shadow:0 18px 46px rgba(10,10,10,0.04);
+        transition:transform .34s cubic-bezier(.16,.84,.3,1), box-shadow .34s;
+        display:flex;flex-direction:column;min-height:520px;
+    }
+    .product-card:hover{ transform:translateY(-8px) scale(1.01); box-shadow:0 30px 80px rgba(31,41,55,0.12); }
+    .product-card .img-wrap{ position:relative; overflow:hidden; }
+    .product-card img{ width:100%; height:360px; object-fit:cover; transition:transform .5s ease; }
+    .product-card:hover img{ transform:scale(1.06) rotate(-0.5deg); }
+    .product-badge{ position:absolute; top:12px; left:12px; padding:8px 12px; border-radius:999px; color:#fff; font-weight:700; font-size:12px; box-shadow:0 8px 24px rgba(169,120,41,0.12); }
+    .product-badge.amber{ background:linear-gradient(90deg,#f59e0b,#b45309); }
+    .product-badge.pink{ background:linear-gradient(90deg,#ec4899,#be185d); }
+    .product-body{ padding:28px 26px; display:flex; flex-direction:column; gap:16px; flex:1; }
+    .product-title{ font-size:20px; color:#9a4a00; font-weight:800; }
+    .product-desc{ color:#6b6b6b; line-height:1.4; }
+    .product-footer{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .price-badge{ font-weight:800; color:#9a4a00; font-size:20px; }
+    .tag-pill{ display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; background:rgba(245,158,11,0.08); color:#9a4a00; }
+    .cta-button{ display:inline-block; background:linear-gradient(180deg,#c96d0a,#b45309); color:white; font-weight:800; padding:12px 20px; border-radius:12px; box-shadow:0 12px 36px rgba(180,83,9,0.12); transition:transform .12s, box-shadow .12s; }
+    .cta-button:hover{ transform:translateY(-3px); box-shadow:0 24px 56px rgba(180,83,9,0.16); }
+    /* responsive tweaks */
+    @media (max-width:640px){ .product-card img{ height:200px } .product-body{ padding:14px } }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="site-header sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="site-title text-3xl font-bold text-amber-800">Mes a Mes</h1>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-8 items-center">
+                    <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                    <li><a href="index.html#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                    <li><a href="index.html#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                    <li><a href="index.html#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                    <li><a href="index.html#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                    <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                    <li><a href="index.html#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                    <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition font-semibold">Mi cuenta</a></li>
+                </ul>
+            </nav>
+            <button class="md:hidden text-amber-800" id="menuBtn">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden bg-white shadow-lg absolute w-full left-0 top-full">
+            <ul class="flex flex-col items-center py-4 space-y-4">
+                <li><a href="index.html" class="text-gray-700 hover:text-amber-600 transition">Inicio</a></li>
+                <li><a href="index.html#galeria" class="text-gray-700 hover:text-amber-600 transition">Galería</a></li>
+                <li><a href="index.html#mision" class="text-gray-700 hover:text-amber-600 transition">Misión</a></li>
+                <li><a href="index.html#porque" class="text-gray-700 hover:text-amber-600 transition">¿Por qué físico?</a></li>
+                <li><a href="index.html#valores" class="text-gray-700 hover:text-amber-600 transition">Valores</a></li>
+                <li><a href="tienda.html" class="text-gray-700 hover:text-amber-600 transition">Tienda</a></li>
+                <li><a href="index.html#contacto" class="text-gray-700 hover:text-amber-600 transition">Contacto</a></li>
+                <li><a href="cuenta.html" class="text-gray-700 hover:text-amber-600 transition">Mi cuenta</a></li>
+            </ul>
+        </div>
+    </header>
+
+                    <!-- Tienda Section -->
+                    <section class="py-20 bg-gray-50 min-h-screen">
+                        <div class="container mx-auto px-4">
+                            <h1 class="text-4xl md:text-5xl font-bold text-center text-amber-800 mb-8">Tienda</h1>
+                            <p class="text-xl text-center text-gray-700 max-w-2xl mx-auto mb-12">
+                                Elegí tu minicalendario favorito y personalizalo a tu manera. ¡Envíos a toda Argentina!
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <!-- Producto 1 -->
+                                <a href="producto.html" class="product-card">
+                                    <div class="img-wrap">
+                                        <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="Clásico Minimalista">
+                                        <span class="product-badge amber">Más vendido</span>
+                                    </div>
+                                    <div class="product-body">
+                                        <div>
+                                            <div class="product-title">Clásico Minimalista</div>
+                                            <div class="product-desc">Diseño limpio, práctico y elegante. Personalizable con tu nombre, frase o logo.</div>
+                                        </div>
+                                        <div class="product-footer">
+                                            <div class="price-badge">$9100 ARS</div>
+                                            <div class="tag-pill">Personalizable</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                <!-- Producto 2 -->
+                                <a href="producto2.html" class="product-card">
+                                    <div class="img-wrap">
+                                        <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80" alt="Creativo Colorido">
+                                        <span class="product-badge pink">Nuevo diseño</span>
+                                    </div>
+                                    <div class="product-body">
+                                        <div>
+                                            <div class="product-title" style="color:#be185d">Calendario peliculas</div>
+                                            <div class="product-desc">Colores vibrantes y arte exclusivo. Ideal para regalar o inspirarte cada día.</div>
+                                        </div>
+                                        <div class="product-footer">
+                                            <div class="price-badge" style="color:#be185d">$9700 ARS</div>
+                                            <div class="tag-pill" style="background:rgba(236,72,153,0.08);color:#be185d">Edición limitada</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="text-center mt-12">
+                                <a href="index.html#contacto" class="cta-button">¿Necesitás algo especial? Contáctanos</a>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Footer -->
+                    <footer class="bg-gray-900 text-white py-12 mt-20" style="margin-top:auto">
+                        <div class="container mx-auto px-4">
+                            <div class="flex flex-col md:flex-row justify-between items-center">
+                                <div class="mb-6 md:mb-0">
+                                    <h2 class="text-3xl font-bold text-amber-500 mb-2">Mes a Mes</h2>
+                                    <p class="text-gray-400">Organizando tu tiempo desde 2018</p>
+                                </div>
+                                <div class="flex flex-col items-center md:items-end">
+                                    <div class="flex space-x-6 mb-6">
+                                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Términos y Condiciones</a>
+                                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Política de Privacidad</a>
+                                        <a href="#" class="text-gray-400 hover:text-amber-500 transition">Preguntas Frecuentes</a>
+                                    </div>
+                                    <p class="text-gray-400 text-sm">&copy; 2023 Mes a Mes - Todos los derechos reservados</p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+
+                    <script>
+                        // Mobile menu toggle
+                        const menuBtn = document.getElementById('menuBtn');
+                        const mobileMenu = document.getElementById('mobileMenu');
+                        menuBtn.addEventListener('click', () => {
+                            mobileMenu.classList.toggle('hidden');
+                        });
+                        // Close mobile menu when clicking a link
+                        const mobileLinks = document.querySelectorAll('#mobileMenu a');
+                        mobileLinks.forEach(link => {
+                            link.addEventListener('click', () => {
+                                mobileMenu.classList.add('hidden');
+                            });
+                        });
+                                        // Product card micro-interactions
+                                        document.querySelectorAll('.product-card').forEach(card=>{
+                                            card.addEventListener('mousemove', (e)=>{
+                                                const rect = card.getBoundingClientRect(); const cx = rect.left + rect.width/2; const cy = rect.top + rect.height/2;
+                                                const dx = (e.clientX - cx) / rect.width; const dy = (e.clientY - cy) / rect.height;
+                                                const rx = dy * 6; const ry = -dx * 8;
+                                                card.style.transform = `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(0)`;
+                                            });
+                                            card.addEventListener('mouseleave', ()=>{ card.style.transform='translateY(0) scale(1)'; });
+                                            card.addEventListener('focusin', ()=>{ card.style.boxShadow='0 30px 80px rgba(31,41,55,0.14)'; });
+                                            card.addEventListener('focusout', ()=>{ card.style.boxShadow='0 14px 40px rgba(31,41,55,0.06)'; });
+                                        });
+                    </script>
+                </body>
+                </html>
